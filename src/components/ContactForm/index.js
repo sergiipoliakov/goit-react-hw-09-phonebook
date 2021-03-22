@@ -1,61 +1,56 @@
-import React, { Component } from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+
+import { useSelector, useDispatch } from 'react-redux';
+
 import { phoneBookOperations, phoneBookSelectors } from '../../redux/phoneBook';
 import DublicateAlert from '../DublicateAlert';
 
 import styles from './ContactForm.module.css';
 
-class ContactForm extends Component {
-  static defaultProps = {};
+export default function ContactForm() {
+  const dispatch = useDispatch();
+  const [name, setName] = useState('');
 
-  static propTypes = {
-    contacts: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        name: PropTypes.string.isRequired,
-        number: PropTypes.string.isRequired,
-      }),
-    ),
+  const handleName = event => {
+    setName(event.target.value);
   };
 
-  state = {
-    name: '',
-    number: '',
-    dublicateName: false,
+  const [number, setNumber] = useState('');
+
+  const handleNumber = event => {
+    setNumber(event.target.value);
   };
 
-  handleChange = e => {
-    const { name, value } = e.target;
+  const [dublicateName, setDublicateName] = useState(false);
 
-    this.setState({
-      [name]: value,
-    });
-  };
+  const contacts = useSelector(phoneBookSelectors.getAllContacts);
 
-  handleSubmit = e => {
-    e.preventDefault();
+  const onSubmit = useCallback(
+    (name, number) => dispatch(phoneBookOperations.addContact(name, number)),
+    [dispatch],
+  );
 
-    const { name, number } = this.state;
+  const handleSubmit = event => {
+    event.preventDefault();
 
     if (name !== '' && number !== '') {
-      const duplicate = this.props.contacts.filter(
-        contact => contact.name === e.target.elements[0].value,
+      const duplicate = contacts.filter(
+        contact => contact.name === event.target.elements[0].value,
       );
 
       if (duplicate.length > 0) {
-        this.setState({ dublicateName: !this.state.dublicateName });
+        setDublicateName(true);
 
         return setTimeout(() => {
-          this.setState({
-            dublicateName: false,
-          });
+          setDublicateName(false);
         }, 2500);
       }
 
-      const onSubmit = this.props.onSubmit;
       onSubmit(name, number);
-      this.setState({ name: '', number: '' });
+      setName('');
+      setNumber('');
+
       return;
     }
     if (name === '') {
@@ -65,57 +60,54 @@ class ContactForm extends Component {
     }
   };
 
-  render() {
-    const { name, number, dublicateName } = this.state;
+  return (
+    <>
+      <DublicateAlert
+        name={name}
+        showAlert={dublicateName && Boolean(name)}
+        text={'is ready exist'}
+      />
 
-    return (
-      <>
-        <DublicateAlert
-          name={name}
-          showAlert={dublicateName && Boolean(name)}
-          text={'is ready exist'}
-        />
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <label className={styles.label}>
+          Name
+          <input
+            className={styles.input}
+            type="name"
+            value={name}
+            onChange={handleName}
+            placeholder="name: Sergii Poliakov"
+            name="name"
+          />
+        </label>
 
-        <form onSubmit={this.handleSubmit} className={styles.form}>
-          <label className={styles.label}>
-            Name
-            <input
-              className={styles.input}
-              type="name"
-              value={name}
-              onChange={this.handleChange}
-              placeholder="name: Sergii Poliakov"
-              name="name"
-            />
-          </label>
-
-          <label className={styles.label}>
-            Number
-            <input
-              className={styles.input}
-              type="tel"
-              value={number}
-              placeholder="tel: 096-123-12-12"
-              onChange={this.handleChange}
-              name="number"
-            />
-          </label>
-          <button type="submit" className={styles.button}>
-            Add contact
-          </button>
-        </form>
-      </>
-    );
-  }
+        <label className={styles.label}>
+          Number
+          <input
+            className={styles.input}
+            type="tel"
+            value={number}
+            placeholder="tel: 096-123-12-12"
+            onChange={handleNumber}
+            name="number"
+          />
+        </label>
+        <button type="submit" className={styles.button}>
+          Add contact
+        </button>
+      </form>
+    </>
+  );
 }
 
-const mapStateToProps = state => ({
-  contacts: phoneBookSelectors.getAllContacts(state),
-});
+ContactForm.defaultProps = {};
 
-const mapDispatchToProps = dispatch => ({
-  onSubmit: (name, number) =>
-    dispatch(phoneBookOperations.addContact(name, number)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
+ContactForm.propTypes = {
+  contacts: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      name: PropTypes.string.isRequired,
+      number: PropTypes.string.isRequired,
+    }),
+  ),
+};

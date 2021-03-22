@@ -26,6 +26,7 @@ const register = credentials => async dispatch => {
 };
 
 const logIn = credentials => async dispatch => {
+  console.log(credentials);
   dispatch(authActions.loginRequest());
 
   try {
@@ -34,8 +35,8 @@ const logIn = credentials => async dispatch => {
     token.set(response.data.token);
     dispatch(authActions.loginSeccess(response.data));
   } catch (error) {
-    const { statusText, status } = error.response;
-    const errorMesaage = `${status} ${statusText}`;
+    // const { statusText, status } = error.response;
+    // const errorMesaage = `${status} ${statusText}`;
 
     dispatch(authActions.loginError(error.message));
     // return toast.error(errorMesaage);

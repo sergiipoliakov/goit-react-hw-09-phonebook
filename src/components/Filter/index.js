@@ -1,9 +1,19 @@
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
 import { phoneBookSelectors, changeFilter } from '../../redux/phoneBook';
 import './Filter.css';
 
-const Filter = ({ value, onChangeFilter }) => {
+export default function Filter() {
+  const dispatch = useDispatch();
+  const value = useSelector(phoneBookSelectors.getFilter);
+
+  const onChangeFilter = useCallback(
+    event => dispatch(changeFilter(event.target.value)),
+    [dispatch],
+  );
+
   return (
     <div className="form">
       <label className="form-label">
@@ -17,6 +27,9 @@ const Filter = ({ value, onChangeFilter }) => {
       </label>
     </div>
   );
+}
+Filter.defaultProps = {
+  value: '',
 };
 
 Filter.propTypes = {
@@ -24,13 +37,3 @@ Filter.propTypes = {
 
   onChangeFilter: PropTypes.func,
 };
-
-const mapStateToProps = state => ({
-  value: phoneBookSelectors.getFilter(state),
-});
-
-const mapDispatchToProps = dispatch => ({
-  onChangeFilter: event => dispatch(changeFilter(event.target.value)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Filter);

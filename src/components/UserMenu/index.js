@@ -1,13 +1,22 @@
+import { useCallback } from 'react';
+
 import { authSelectors, authOperations } from '../../redux/auth';
 import defaultAvatar from './default-avatar.png';
 import styles from './UserMenu.module.css';
 
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
-function UserMenu({ avatar, name, onLogout }) {
+export default function UserMenu() {
+  const dispatch = useDispatch();
+  const name = useSelector(authSelectors.getUserEmail);
+
+  const onLogout = useCallback(() => dispatch(authOperations.logOut()), [
+    dispatch,
+  ]);
+
   return (
     <div className={styles.container}>
-      <img src={avatar} alt="" width="32" className={styles.avatar} />
+      <img src={defaultAvatar} alt="" width="32" className={styles.avatar} />
       <span className={styles.name}>Добро пожаловать, {name}</span>
       <button className={styles.button} type="button" onClick={onLogout}>
         Выйти
@@ -15,12 +24,3 @@ function UserMenu({ avatar, name, onLogout }) {
     </div>
   );
 }
-const mapStateToProps = state => ({
-  avatar: defaultAvatar,
-  name: authSelectors.getUserEmail(state),
-});
-
-const mapDispatchToProps = {
-  onLogout: authOperations.logOut,
-};
-export default connect(mapStateToProps, mapDispatchToProps)(UserMenu);
