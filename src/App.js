@@ -28,7 +28,9 @@ export default function App() {
       <AppBar />
       <Suspense fallback={<p>Загружаю...</p>}>
         <Switch>
-          <PublicRoute path={routes.home} exact component={HomeView} />
+          <PublicRoute path={routes.home} exact>
+            <HomeView />
+          </PublicRoute>
 
           <PrivateRoute path={routes.phoneBook} exact redirectTo={routes.login}>
             <PhoneBookView />
