@@ -26,7 +26,6 @@ const register = credentials => async dispatch => {
 };
 
 const logIn = credentials => async dispatch => {
-  console.log(credentials);
   dispatch(authActions.loginRequest());
 
   try {
