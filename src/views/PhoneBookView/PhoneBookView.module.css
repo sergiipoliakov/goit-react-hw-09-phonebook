@@ -1,0 +1,25 @@
+.phoneBookView {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 12px;
+  padding-right: 12px;
+  overflow: hidden;
+}
+
+.appear {
+  transform: translateX(-100%);
+}
+
+.appearActive {
+  transform: translateX(0);
+  transition: transform 500ms linear;
+}
+.title {
+  display: flex;
+}
+.loading {
+  margin-left: 100px;
+}

@@ -1,0 +1,47 @@
+.ContactList {
+  list-style: none;
+  padding: 8px;
+  overflow: hidden;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.ContactList-item-fade-enter {
+  opacity: 0;
+  transform: scale(0.1);
+}
+
+.ContactList-item-fade-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 250ms linear;
+}
+
+.ContactList-item-fade-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.ContactList-item-fade-exit-active {
+  opacity: 1;
+  transform: scale(0.1);
+  transition: all 250ms linear;
+}
+
+.ContactList-title-slideIn-enter {
+  transform: translateX(-100%);
+}
+
+.ContactList-title-slideIn-enter-active {
+  transform: translateX(0);
+  transition: transform 500ms linear;
+}
+
+.ContactList-title-slideIn-exit {
+  transform: translateX(0);
+  transition: transform 500ms linear;
+}
+
+.ContactList-title-slideIn-exit-active {
+  transform: translateX(-100%);
+}

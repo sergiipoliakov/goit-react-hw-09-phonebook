@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, lazy, Suspense } from 'react';
+import { Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { authOperations } from './redux/auth';
+import routes from './routes';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Container from './components/Container';
+
+import AppBar from './components/AppBar';
+import PrivateRoute from './components/PrivateRoute';
+import PublicRoute from './components/PublicRoute';
+
+const HomeView = lazy(() => import('./views/Home'));
+const LoginView = lazy(() => import('./views/LoginView/index'));
+const RegisterView = lazy(() => import('./views/RegisterView/index'));
+const PhoneBookView = lazy(() => import('./views/PhoneBookView/index'));
+
+class App extends Component {
+  componentDidMount() {
+    this.props.onGetCurrentUser();
+  }
+
+  render() {
+    return (
+      <Container>
+        <AppBar />
+        <Suspense fallback={<p>Загружаю...</p>}>
+          <Switch>
+            <PublicRoute path={routes.home} exact component={HomeView} />
+            <PrivateRoute
+              path={routes.phoneBook}
+              exact
+              redirectTo={routes.login}
+              component={PhoneBookView}
+            />
+            <PublicRoute
+              path={routes.login}
+              exact
+              redirectTo={routes.phoneBook}
+              restricted
+              component={LoginView}
+            />
+            <PublicRoute
+              path={routes.register}
+              exact
+              redirectTo={routes.phoneBook}
+              restricted
+              component={RegisterView}
+            />
+          </Switch>
+        </Suspense>
+      </Container>
+    );
+  }
 }
 
-export default App;
+const mapDispatchToProps = {
+  onGetCurrentUser: authOperations.getCurrentUser,
+};
+export default connect(null, mapDispatchToProps)(App);
